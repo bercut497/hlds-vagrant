@@ -9,12 +9,12 @@ else
 
 #  aptitude remove localepurge --purge
 
-  echo '=== [ sh provisioning ] === '
-  echo ' sh: -> set timezone (localtime)'
-  rm -f /etc/localtime
+#  echo '=== [ sh provisioning ] === '
+#  echo ' sh: -> set timezone (localtime)'
+#  rm -f /etc/localtime
 
-  cp -vf /usr/share/zoneinfo/Asia/Yekaterinburg /etc/localtime
-  echo 'Asia/Yekaterinburg' > /etc/timezone
+#  cp -vf /usr/share/zoneinfo/Asia/Yekaterinburg /etc/localtime
+#  echo 'Asia/Yekaterinburg' > /etc/timezone
 
 
   echo ' sh: -> set locale-gen '
@@ -190,10 +190,10 @@ EOL
   bash /vagrant_conf/key/add-key.gpg.sh
   cd ~
  
-  if [[ ! -z "$(dpkg --print-foreign-architectures | grep amd64)" ]] ; then
-    echo ' sh: -> remove i386 architecture'
-    dpkg --remove-architecture amd64  > /dev/null
-  fi
+  #if [[ ! -z "$(dpkg --print-foreign-architectures | grep amd64)" ]] ; then
+  #  echo ' sh: -> remove i386 architecture'
+  #  dpkg --remove-architecture amd64  > /dev/null
+  #fi
   
   echo ' sh: -> disable ipv6 at all '
   cat > /etc/sysctl.d/noipv6 <<EOL
@@ -224,11 +224,12 @@ EOL
     debian-archive-keyring \
     debian-ports-archive-keyring \
     deb-multimedia-keyring \
-     > /dev/null
+    > /dev/null
+
 
   echo ' sh: -> debian update'
-  apt-get --yes update > /dev/null
-  apt-get --yes --force-yes upgrade > /dev/null
+  apt-get --yes update #> /dev/null
+  apt-get --yes --force-yes upgrade #> /dev/null
   aptitude -y safe-upgrade
 
   echo ' sh: -> setup software'

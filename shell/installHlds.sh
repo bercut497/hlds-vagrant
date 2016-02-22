@@ -5,12 +5,13 @@ if [[ "$EUID" -ne "0" ]] ; then
     exit $?
 fi
 cd "$( dirname ""$0"" )"
+apt-get update -y -q 
 
 echo ' == [ INSTALL HLDS SCRIPT ] == '
 if [[ "$(uname -a | grep -c 'x86_64')" -eq "1" ]]; then
 	echo 'system is 64bit (amd64)'
-	echo ' => install gcc 32 libs'
-	sudo apt-get install lib32gcc1 lib32stdc++6 lib32z1 -q -y
+	echo ' => install 32 libs'
+	apt-get install lib32gcc1 lib32stdc++6 lib32z1 -q -y
 	[ $? -eq 0 ] || exit $?
 fi
 
@@ -36,9 +37,9 @@ cd /opt/steam
 if [[ ! -f steamcmd.sh ]] ; then
     echo '=> steam.sh not fount; get from tar' 
     if [[ ! -f steamcmd_linux.tar.gz ]] ; then
-	echo '=> steamcmd_linux.tar.gz not fount; get from web'
+    echo '=> steamcmd_linux.tar.gz not fount; get from web'
         sudo -n -u steamuser wget -c http://media.steampowered.com/installer/steamcmd_linux.tar.gz
-	[ $? -ne 0 ] && exit $? || ls -la ./
+    [ $? -ne 0 ] && exit $? || ls -la ./
     fi
     tar -xvzf ./steamcmd_linux.tar.gz
     ls -la ./
@@ -51,6 +52,11 @@ sudo -n -u steamuser mkdir -p /home/steamuser/.steam
 if [[ ! -d "/home/steamuser/.steam/sdk32" ]] ;then
   sudo -n -u steamuser ln -s /opt/steam/linux32 /home/steamuser/.steam/sdk32
 fi
+
+if [[ ! -f "/home/steamuser/.steam/sdk32/steamclient.so" ]] ; then
+  sudo -n -u steamuser ln -s steamcmd/linux32/steamclient.so /home/steamuser/.steam/sdk32/steamclient.so
+fi
+
 if [[ ! -f "/home/steamuser/.steam/steam" ]] ; then
   sudo -n -u steamuser ln -s /opt/steam/steam.sh /home/steamuser/.steam/steam
 fi
