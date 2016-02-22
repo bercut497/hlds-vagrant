@@ -23,7 +23,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.box = "debian-8.0.0-i386"
-  config.vm.box_url = "https://github.com/bercut497/vagrant-box/releases/download/debian-8.0.0-i386/debian-8.0.0-i386.box"
+  #config.vm.box_url = "https://github.com/bercut497/vagrant-box/releases/download/debian-8.0.0-i386/debian-8.0.0-i386.box"
+  config.vm.box_url = "http://github.com/bercut497/vagrant-box/releases/download/debian-8.1.0-amd64/debian-8.1.0-amd64.box"
   config.ssh.forward_agent = true
 
   config.vm.synced_folder "./data", "/vagrant_data", mount_options: ["ro"]
