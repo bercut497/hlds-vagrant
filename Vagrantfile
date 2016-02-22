@@ -12,19 +12,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   TIME_START = Time.now.iso8601;
   
-  if Vagrant.has_plugin?("vagrant-cachier")
-    # Configure cached packages to be shared between instances of the same base box.
-    # More info on http://fgrehm.viewdocs.io/vagrant-cachier/usage
-    config.cache.scope = :box
-    config.cache.synced_folder_opts = {
-      mount_options: ['rw,dmode=777,fmode=666']
-    }
-    # For more information please check http://docs.vagrantup.com/v2/synced-folders/basic_usage.html
-  end
-  
   config.vm.box = "debian-8.0.0-i386"
-  #config.vm.box_url = "https://github.com/bercut497/vagrant-box/releases/download/debian-8.0.0-i386/debian-8.0.0-i386.box"
-  config.vm.box_url = "http://github.com/bercut497/vagrant-box/releases/download/debian-8.1.0-amd64/debian-8.1.0-amd64.box"
+  config.vm.box_url = "https://github.com/bercut497/vagrant-box/releases/download/debian-8.0.0-i386/debian-8.0.0-i386.box"
+  #config.vm.box_url = "http://github.com/bercut497/vagrant-box/releases/download/debian-8.1.0-amd64/debian-8.1.0-amd64.box"
   config.ssh.forward_agent = true
 
   config.vm.synced_folder "./data", "/vagrant_data", mount_options: ["ro"]
@@ -51,6 +41,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--snapshotfolder", "./snapshot"]
       vb.customize ["modifyvm", :id, "--nataliasmode1", "proxyonly"]       
       vb.name = "#{VAGRANTCFG_HOSTNAME}.#{VAGRANTCFG_DOMAIN}"
+
+      vb.gui = true
     end
     
     cs.vm.hostname = "#{VAGRANTCFG_HOSTNAME}.#{VAGRANTCFG_DOMAIN}"

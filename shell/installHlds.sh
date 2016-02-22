@@ -7,9 +7,12 @@ fi
 cd "$( dirname ""$0"" )"
 
 echo ' == [ INSTALL HLDS SCRIPT ] == '
-#echo ' => install gcc 32 libs'
-#sudo apt-get install lib32gcc1 -q -y
-#[ $? -eq 0 ] || exit $?
+if [[ "$(uname -a | grep -c 'x86_64')" -eq "1" ]]; then
+	echo 'system is 64bit (amd64)'
+	echo ' => install gcc 32 libs'
+	sudo apt-get install lib32gcc1 lib32stdc++6 lib32z1 -q -y
+	[ $? -eq 0 ] || exit $?
+fi
 
 echo ' => add user'
 adduser --system --group --disabled-password steamuser
