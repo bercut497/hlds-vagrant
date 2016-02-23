@@ -4,14 +4,18 @@ if [[ "$EUID" -ne "0" ]] ; then
     sudo $0
     exit $?
 fi
+maxtryes=1000
 cd "$( dirname ""$0"" )"
-apt-get update -y -q 
+apt-get update -y -q > /dev/null
 
 echo ' == [ INSTALL HLDS SCRIPT ] == '
 if [[ "$(uname -a | grep -c 'x86_64')" -eq "1" ]]; then
 	echo 'system is 64bit (amd64)'
 	echo ' => install 32 libs'
 	apt-get install lib32gcc1 lib32stdc++6 lib32z1 -q -y
+	[ $? -eq 0 ] || exit $?
+else
+    apt-get install libstdc++6 libz1 -q -y
 	[ $? -eq 0 ] || exit $?
 fi
 
@@ -21,14 +25,18 @@ adduser vagrant steamuser
 
 if [[ ! -d "/home/steamuser" ]]; then
   mkdir -p /home/steamuser
-  chown -Rvf steamuser:steamuser /home/steamuser
+  chown -Rf steamuser:steamuser /home/steamuser
 fi
 [ $? -eq 0 ] || exit $?
 
 echo ' => create folders '
- mkdir -p /opt/{steam,hlds} 
- chown -Rvf steamuser:steamuser /opt/{steam,hlds} 
- chmod -Rvf 775 /opt/{steam,hlds} 
+ mkdir -p /opt/{steam,hlds}
+ if [ -f "/vagrant_bak/hlds.tar.gz" ] ; then
+  cd /opt
+  tar -xzvf /vagrant_bak/hlds.tar.gz
+ fi 
+ chown -Rf steamuser:steamuser /opt/{steam,hlds} 
+ chmod -Rf 775 /opt/{steam,hlds} 
 [ $? -eq 0 ] || exit $?
 
 echo ' => get SteamCmd'
@@ -47,6 +55,7 @@ if [[ ! -f steamcmd.sh ]] ; then
 fi
 [ $? -eq 0 ] || exit $?
 
+
 echo ' => add create symlinks'
 sudo -n -u steamuser mkdir -p /home/steamuser/.steam
 if [[ ! -d "/home/steamuser/.steam/sdk32" ]] ;then
@@ -54,52 +63,51 @@ if [[ ! -d "/home/steamuser/.steam/sdk32" ]] ;then
 fi
 
 if [[ ! -f "/home/steamuser/.steam/sdk32/steamclient.so" ]] ; then
-  sudo -n -u steamuser ln -s steamcmd/linux32/steamclient.so /home/steamuser/.steam/sdk32/steamclient.so
+  sudo -n -u steamuser ln -s /opt/steam/linux32/steamclient.so /home/steamuser/.steam/sdk32/steamclient.so
 fi
 
 if [[ ! -f "/home/steamuser/.steam/steam" ]] ; then
-  sudo -n -u steamuser ln -s /opt/steam/steam.sh /home/steamuser/.steam/steam
+  sudo -n -u steamuser ln -s -T /opt/steam/steam.sh /home/steamuser/.steam/steam
 fi
-
-
-#if [[ ! -d "/opt/hlds/steamapps" ]] ; then
-#  mkdir -p /opt/hlds/steamapps/
-#  chown -R  steamuser:steamuser /opt/hlds
-#fi
-
-#if [[ ! -f "./appmanifest_10.acf" ]] ; then
-#  cp -v /vagrant_data/appmanifest_10.acf /opt/hlds/steamapps/
-#fi
-
-#if [[ ! -f "./appmanifest_70.acf" ]] ; then
-#  cp -v /vagrant_data/appmanifest_70.acf /opt/hlds/steamapps/
-#fi
-
-#if [[ ! -f "./appmanifest_90.acf" ]] ; then
-#  cp -v /vagrant_data/appmanifest_90.acf /opt/hlds/stemapps/
-#fi
 [ $? -eq 0 ] || exit $?
 
+# if [[ ! -d "/opt/hlds/steamapps" ]] ; then
+  # mkdir -p /opt/hlds/steamapps/
+  # chown -R  steamuser:steamuser /opt/hlds
+# fi
+
+# if [[ -f "/vagrant_data/appmanifest_10.acf" ]] ; then
+  # cp -v /vagrant_data/appmanifest_10.acf /opt/hlds/steamapps
+# fi
+
+# if [[ -f "/vagrant_data/appmanifest_70.acf" ]] ; then
+  # cp -v /vagrant_data/appmanifest_70.acf /opt/hlds/steamapps
+# fi
+
+# if [[ -f "/vagrant_data/appmanifest_90.acf" ]] ; then
+  # cp -v /vagrant_data/appmanifest_90.acf /opt/hlds/stemapps
+# fi
+# chown steamuser:steamuser -Rv /opt/hlds/steamapps
+# chmod 664 -Rv /opt/hlds/steamapps/*.acf
+# [ $? -eq 0 ] || exit $?
+
   echo ' => try get steam files'
-if [[ ! -f "./hlds_script.steamcmd" ]] ; then
-  cp -v /vagrant_data/hlds_script.steamcmd /opt/steam/
-  chown steamuser:steamuser /opt/steam/hlds_script.steamcmd
-fi
-#  tcount=0;
-#  stoploop=0
-#  while [ ${stoploop} -eq 0 ] ; do
-#    sudo -n -u steamuser ./steamcmd.sh +runscript hlds_script.steamcmd +quit
-#    if [ $? -eq 0 ]; then
-#        stoploop=1;
-#        echo "update success."
-#    elif [ ${tcount} -lt 10 ]; then
-#        tryes=( ${tcount} +1 );
-#        echo " next try ( ${tcount} ) ... "
-#    else
-#        echo "Cant update files. Try count: ${tryes} . "
-#        exit 1
-#    fi
-#  done  
+  /opt/steam/steamcmd.sh +login anonymous +quit
+#if [[ ! -f "./hlds_script.steamcmd" ]] ; then
+#  cp -v /vagrant_data/hlds_script.steamcmd /opt/steam/
+#  chown steamuser:steamuser /opt/steam/hlds_script.steamcmd
+#fi
+# tcount=0;
+# stoploop=0
+# sudo -n -u steamuser /opt/steam/steamcmd.sh +runscript /opt/steam/hlds_script.steamcmd +quit
+# if [ $? -eq 0 ]; then
+  # echo "update success."
+# else 
+  # echo -e "Cant update files."
+# fi
+
+cd /home/steamuser
+
   echo ' ->  steam app 90 valve files'
   if [[ ! -f "./hlds_valve90.steamcmd" ]] ; then
     cp -v /vagrant_data/hlds_valve90.steamcmd /opt/steam/
@@ -108,15 +116,22 @@ fi
   tcount=0;
   stoploop=0
   while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser ./steamcmd.sh +runscript hlds_valve90.steamcmd +quit
+    sudo -n -u steamuser /opt/steam/steamcmd.sh +runscript /opt/steam/hlds_valve90.steamcmd +quit
     if [ $? -eq 0 ]; then
         stoploop=1;
         echo "update success."
-    elif [ ${tcount} -lt 10 ]; then
-        tryes=( ${tcount} +1 );
-        echo " next try ( ${tcount} ) ... "
+    elif [ ${tcount} -lt ${maxtryes} ]; then
+        tcount=$(( ${tcount} +1 ));
+        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+		if [[ ${tcount}%100 -eq 0 ]] ; then 
+		  sleep 10m
+		elif [[ ${tcount}%10 -eq 0 ]] ; then
+		  sleep 1m
+		else
+		  sleep 10s
+		fi
     else
-        echo "Cant update [ app 90 valve ] files. Try count: ${tryes} . "
+        echo "Cant update [ app 90 valve ] files. Try count: ${tcount} . "
         exit 1
     fi
   done  
@@ -129,15 +144,22 @@ fi
   tcount=0;
   stoploop=0
   while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser ./steamcmd.sh +runscript hlds_cstrike90.steamcmd +quit
+    sudo -n -u steamuser /opt/steam/steamcmd.sh +runscript /opt/steam/hlds_cstrike90.steamcmd +quit
     if [ $? -eq 0 ]; then
         stoploop=1;
         echo "update success."
-    elif [ ${tcount} -lt 10 ]; then
-        tryes=( ${tcount} +1 );
-        echo " next try ( ${tcount} ) ... "
+    elif [ ${tcount} -lt ${maxtryes} ]; then
+        tcount=$(( ${tcount} +1 ));
+        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+        if [[ ${tcount}%100 -eq 0 ]] ; then 
+		  sleep 10m
+		elif [[ ${tcount}%10 -eq 0 ]] ; then
+		  sleep 1m
+		else
+		  sleep 10s
+		fi
     else
-        echo "Cant update [ app 90 cstrike ] files. Try count: ${tryes} . "
+        echo "Cant update [ app 90 cstrike ] files. Try count: ${tcount} . "
         exit 1
     fi
   done 
@@ -150,15 +172,22 @@ fi
   tcount=0;
   stoploop=0
   while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser ./steamcmd.sh +runscript hlds_valve70.steamcmd +quit
+    sudo -n -u steamuser /opt/steam/steamcmd.sh +runscript /opt/steam/hlds_valve70.steamcmd +quit
     if [ $? -eq 0 ]; then
         stoploop=1;
         echo "update success."
-    elif [ ${tcount} -lt 10 ]; then
-        tryes=( ${tcount} +1 );
-        echo " next try ( ${tcount} ) ... "
+    elif [ ${tcount} -lt ${maxtryes} ]; then
+        tcount=$(( ${tcount} +1 ));
+        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+        if [[ ${tcount}%100 -eq 0 ]] ; then 
+		  sleep 10m
+		elif [[ ${tcount}%10 -eq 0 ]] ; then
+		  sleep 1m
+		else
+		  sleep 10s
+		fi
     else
-        echo "Cant update [ app 70 valve ] files. Try count: ${tryes} . "
+        echo "Cant update [ app 70 valve ] files. Try count: ${tcount} . "
         exit 1
     fi
   done  
@@ -171,15 +200,22 @@ fi
   tcount=0;
   stoploop=0
   while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser ./steamcmd.sh +runscript hlds_cstrike10.steamcmd +quit
+    sudo -n -u steamuser /opt/steam/steamcmd.sh +runscript /opt/steam/hlds_cstrike10.steamcmd +quit
     if [ $? -eq 0 ]; then
         stoploop=1;
         echo "update success."
-    elif [ ${tcount} -lt 10 ]; then
-        tryes=( ${tcount} +1 );
-        echo " next try ( ${tcount} ) ... "
+    elif [ ${tcount} -lt ${maxtryes} ]; then
+        tcount=$(( ${tcount} +1 ));
+        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+        if [[ ${tcount}%100 -eq 0 ]] ; then 
+		  sleep 10m
+		elif [[ ${tcount}%10 -eq 0 ]] ; then
+		  sleep 1m
+		else
+		  sleep 10s
+		fi
     else
-        echo "Cant update [ app 10 cstrike ] files. Try count: ${tryes} . "
+        echo "Cant update [ app 10 cstrike ] files. Try count: ${tcount} . "
         exit 1
     fi
   done  
@@ -192,6 +228,21 @@ echo ' => disable secure'
 sed -i 's|"secure".*|"secure ""0"" "|g' ${csdir}/liblist.gam
 [ $? -eq 0 ] || exit $?
 
+echo ' => create backup tar for boosting installation'
+if [ -d "/vagrant_bak" ] ; then
+	if [ -f "/vagrant_bak/hlds.tar.gz" ] ; then
+		rm -f /vagrant_bak/hlds.tar.gz
+	fi
+	cd /opt
+	tar -czvf /vagrant_bak/hlds.tar.gz hlds
+fi
+
+if [ ! -f "/var/run/hlds.pid" ] ; then
+  touch /var/run/hlds.pid
+fi
+chmod 664 /var/run/hlds.pid
+chown steamuser:steamuser /var/run/hlds.pid
+
 if [ ! -f "/etc/init.d/hlds" ] ; then
   echo ' => set daemon'
   cp -v /vagrant_data/hlds-daemon.init /etc/init.d/hlds
@@ -200,9 +251,9 @@ if [ ! -f "/etc/init.d/hlds" ] ; then
   [ $? -eq 0 ] || exit $?
   
   echo ' => start daemon'
-  service hlds start
+  /etc/init.d/hlds start
   [ $? -eq 0 ] || exit $?
 fi
 
-service hlds status
+/etc/init.d/hlds status
 exit 0

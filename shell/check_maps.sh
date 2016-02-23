@@ -28,16 +28,16 @@ chown -Rf steamuser:steamuser "${csdir}/"
 chmod 775 $( find  ${csdir} -type d )
 chmod 664 $( find  ${csdir} -type f )
 
-if [ -f "${csdir}/tools/resgen.sh" ] ; then
+if [ -f "${csdir}/tools/runresgen.sh" ] ; then
     cd "${csdir}/tools/"
     if [ ! -x "${csdir}/tools/resgen" ]; then
         chmod +x "${csdir}/tools/resgen"
     fi
-    if [ ! -x "${csdir}/tools/resgen.sh" ]; then
-        chmod +x "${csdir}/tools/resgen.sh"
+    if [ ! -x "${csdir}/tools/runresgen.sh" ]; then
+        chmod +x "${csdir}/tools/runresgen.sh"
     fi
 
-    bash ./resgen.sh
+    sudo -n -u steamuser ./runresgen.sh
     [ $? -eq 0 ] && ( echo -n ' call resgen ok.' ) || exit $?   
 fi
 [ $? -eq 0 ] && ( echo -e '\n\n === \n ALL OK.' ) || exit $?

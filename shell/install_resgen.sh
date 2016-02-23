@@ -12,7 +12,7 @@ echo ' == [ INSTALL RESGEN SCRIPT ] == '
 git --version &>/dev/null
 if [ $? -ne 0 ]; then
     echo ' => install git ... '
-    apt-get install -y -qq git
+    apt-get install -y -qq git g++
     [ $? -eq 0 ] && ( echo -n ' ok.' ) || exit $?
 fi
 
@@ -64,16 +64,19 @@ cp -pvf /var/git/resgen/bin/resgen ${csdir}/tools/
 chmod -f +x "${csdir}/tools/resgen"
 chown -f steamuser:steamuser "${csdir}/tools/resgen"
 
-if [ ! -f "${csdir}/tools/resgen.sh" ]; then
-  if [ ! -f "/vagrant_data/resgen.sh" ] ; then
-    echo "ERROR: /vagrant_data/resgen.sh not found. exit..."
+if [ ! -f "${csdir}/tools/runresgen.sh" ]; then
+  if [ ! -f "/vagrant_data/runresgen.sh" ] ; then
+    echo "ERROR: /vagrant_data/runresgen.sh not found. exit..."
     exit 1
   fi
-  cp -purRv /vagrant_data/resgen.sh ${csdir}/tools/resgen.sh
+  cp -purRv /vagrant_data/runresgen.sh ${csdir}/tools/runresgen.sh
   [ $? -eq 0 ] && ( echo -n ' ok.' ) || exit $?
-  chmod -f +x "${csdir}/tools/resgen.sh"
-  chown -f steamuser:steamuser "${csdir}/tools/resgen.sh"
+  chmod -f +x "${csdir}/tools/runresgen.sh"
+  chown -f steamuser:steamuser "${csdir}/tools/runresgen.sh"
 fi
 chmod -Rvf +x "${csdir}/tools"
+[ $? -eq 0 ] && ( echo -e '\n OK.' ) || exit $?
 
+echo -e 'run resgen after install'
+cd ${csdir}/tools && sudo -n -u steamuser ./runresgen.sh
 [ $? -eq 0 ] && ( echo -e '\n\n === \n ALL OK.' ) || exit $?

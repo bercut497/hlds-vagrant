@@ -52,7 +52,9 @@ case "$1" in
     else
         echo "Starting $name"
         cd "$dir"
+        touch "$pid_file" && chmod 664 "$pid_file" && chown steamuser:steamuser "$pid_file"
         sudo -n -u "$user" $cmd >> "$stdout_log" 2>> "$stderr_log" &
+        sleep 5s
         if ! is_running; then
             echo "Unable to start, see $stdout_log and $stderr_log"
             exit 1
