@@ -34,7 +34,7 @@ cmd="${exe} \
     +sv_lan 1 \
     +ip 0.0.0.0 \
     +port 27015 \
-    +map aim_headshot \
+    +map de_dust \
     +maxplayers 32"
 
 get_pid() {
@@ -42,7 +42,7 @@ get_pid() {
 }
 
 is_running() {
-    [[ -f "$pid_file" ]] && (PIDVAL=`get_pid`) && [[ "$PIDVAL" -ne "0" ]] && ps "$PIDVAL" > /dev/null 2>&1
+    [[ -f "$pid_file" ]] && [ "0`get_pid`" != "0" ] && ps "`get_pid`" > /dev/null 2>&1
 }
 
 case "$1" in
