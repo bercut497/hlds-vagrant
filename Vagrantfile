@@ -12,9 +12,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   TIME_START = Time.now.iso8601;
   
-  config.vm.box = "debian-8.5.0-i386"
-  config.vm.box_url = "https://github.com/bercut497/vagrant-debian/releases/download/v8.5.0/debian-8.5.0-i386.box"
+  config.vm.box = "debian-8.6.0-i386"
+  config.vm.box_url = "https://github.com/bercut497/vagrant-debian/releases/download/v8.6.0/debian-8.6.0-i386.box"
   config.ssh.forward_agent = true
+  config.ssh.insert_key = false
 
   config.vm.synced_folder "./data", "/vagrant_data", mount_options: ["ro"]
   config.vm.synced_folder "./conf", "/vagrant_conf", mount_options: ["ro"]
