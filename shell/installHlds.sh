@@ -80,36 +80,40 @@ fi
   echo ' => get game files'
   echo ' => *******************'
 
+## Half-Life Files (valve)
+##
+#  echo ' ->  steam app 70 valve files'
+#  if [[ ! -f "/opt/steam/hlds_valve70.steam.sh" ]] ; then
+#    cp -v /vagrant_data/hlds_valve70.steam.sh /opt/steam/
+#    chown steamuser:steamuser /opt/steam/hlds_valve70.steam.sh
+#    chmod +x /opt/steam/hlds_valve70.steam.sh
+#  fi
+#  tcount=0;
+#  stoploop=0
+#  while [ ${stoploop} -eq 0 ] ; do
+#    sudo -n -u steamuser /opt/steam/hlds_valve70.steam.sh
+#    if [ $? -eq 0 ]; then
+#        stoploop=1;
+#        echo "update success."
+#    elif [ ${tcount} -lt ${maxtryes} ]; then
+#        tcount=$(( ${tcount} +1 ));
+#        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+#		if [[ ${tcount}%100 -eq 0 ]] ; then 
+#		  sleep 10m
+#		elif [[ ${tcount}%10 -eq 0 ]] ; then
+#		  sleep 1m
+#		else
+#		  sleep 10s
+#		fi
+#    else
+#        echo "Cant update [ app 70 valve ] files. Try count: ${tcount} . "
+#        exit 1
+#    fi
+#  done
 
-  echo ' ->  steam app 70 valve files'
-  if [[ ! -f "/opt/steam/hlds_valve70.steam.sh" ]] ; then
-    cp -v /vagrant_data/hlds_valve70.steam.sh /opt/steam/
-    chown steamuser:steamuser /opt/steam/hlds_valve70.steam.sh
-    chmod +x /opt/steam/hlds_valve70.steam.sh
-  fi
-  tcount=0;
-  stoploop=0
-  while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser /opt/steam/hlds_valve70.steam.sh
-    if [ $? -eq 0 ]; then
-        stoploop=1;
-        echo "update success."
-    elif [ ${tcount} -lt ${maxtryes} ]; then
-        tcount=$(( ${tcount} +1 ));
-        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
-		if [[ ${tcount}%100 -eq 0 ]] ; then 
-		  sleep 10m
-		elif [[ ${tcount}%10 -eq 0 ]] ; then
-		  sleep 1m
-		else
-		  sleep 10s
-		fi
-    else
-        echo "Cant update [ app 70 valve ] files. Try count: ${tcount} . "
-        exit 1
-    fi
-  done
 
+## HLDS Files for valve
+##
   echo ' ->  steam app 90 valve files'
   if [[ ! -f "/opt/steam/hlds_valve90.steam.sh" ]] ; then
     cp -v /vagrant_data/hlds_valve90.steam.sh /opt/steam/
@@ -140,35 +144,40 @@ fi
   done  
 
 
-  echo ' ->  steam app 90 cstrike files'
-  if [[ ! -f "/opt/steam/hlds_cstrike10.steam.sh" ]] ; then
-    cp -v /vagrant_data/hlds_cstrike10.steam.sh /opt/steam/
-    chown steamuser:steamuser /opt/steam/hlds_cstrike10.steam.sh
-    chmod +x /opt/steam/hlds_cstrike10.steam.sh
-  fi
-  tcount=0;
-  stoploop=0
-  while [ ${stoploop} -eq 0 ] ; do
-    sudo -n -u steamuser /opt/steam/hlds_cstrike10.steam.sh
-    if [ $? -eq 0 ]; then
-        stoploop=1;
-        echo "update success."
-    elif [ ${tcount} -lt ${maxtryes} ]; then
-        tcount=$(( ${tcount} +1 ));
-        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
-        if [[ ${tcount}%100 -eq 0 ]] ; then 
-		  sleep 10m
-		elif [[ ${tcount}%10 -eq 0 ]] ; then
-		  sleep 1m
-		else
-		  sleep 10s
-		fi
-    else
-        echo "Cant update [ app 10 cstrike ] files. Try count: ${tcount} . "
-        exit 1
-    fi
-  done
+## Counter Strike files (cstrike)
+##
+#  echo ' ->  steam app 10 cstrike files'
+#  if [[ ! -f "/opt/steam/hlds_cstrike10.steam.sh" ]] ; then
+#    cp -v /vagrant_data/hlds_cstrike10.steam.sh /opt/steam/
+#    chown steamuser:steamuser /opt/steam/hlds_cstrike10.steam.sh
+#    chmod +x /opt/steam/hlds_cstrike10.steam.sh
+#  fi
+#  tcount=0;
+#  stoploop=0
+#  while [ ${stoploop} -eq 0 ] ; do
+#    sudo -n -u steamuser /opt/steam/hlds_cstrike10.steam.sh
+#    if [ $? -eq 0 ]; then
+#        stoploop=1;
+#        echo "update success."
+#    elif [ ${tcount} -lt ${maxtryes} ]; then
+#        tcount=$(( ${tcount} +1 ));
+#        echo -e "\n ---> next try ( ${tcount} / ${maxtryes} ) ... \n\n"
+#        if [[ ${tcount}%100 -eq 0 ]] ; then 
+#		  sleep 10m
+#		elif [[ ${tcount}%10 -eq 0 ]] ; then
+#		  sleep 1m
+#		else
+#		  sleep 10s
+#		fi
+#    else
+#        echo "Cant update [ app 10 cstrike ] files. Try count: ${tcount} . "
+#        exit 1
+#    fi
+#  done
 
+
+## HLDS Files for cstrike
+##
   echo ' ->  steam app 90 cstrike files'
   if [[ ! -f "/opt/steam/hlds_cstrike90.steam.sh" ]] ; then
     cp -v /vagrant_data/hlds_cstrike90.steam.sh /opt/steam/
